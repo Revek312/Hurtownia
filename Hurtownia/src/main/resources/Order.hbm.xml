@@ -1,0 +1,19 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+   <class name = "bd.lab.Order" table = "zamowienia">
+      
+      <id name = "id" type = "int" column = "idZamowienia">
+         <generator class="native"/>
+      </id>
+      
+      <property name = "clientId" column = "idKlienta" type = "int"/>
+      <property name = "paymentId" column = "idPlatnosci" type = "int"/>
+      <property name = "status" column = "status" type = "int"/>
+      <property name = "date" column = "data" type = "date"/>
+      
+   </class>
+</hibernate-mapping>

@@ -1,0 +1,24 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+   <class name = "bd.lab.Client" table = "klienci">
+      
+      <meta attribute = "class-description">
+         This class contains the client detail. 
+      </meta>
+      
+      <id name = "id" type = "int" column = "idKlienta">
+         <generator class="native"/>
+      </id>
+      
+      <property name = "NIP" column = "nip" type = "string"/>
+      <property name = "name" column = "nazwa" type = "string"/>
+      <property name = "address" column = "adres" type = "string"/>
+<property name = "email" column = "email" type = "string"/>
+<property name = "phone" column = "telefon " type = "string"/>
+      
+   </class>
+</hibernate-mapping>

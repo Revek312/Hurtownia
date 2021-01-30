@@ -1,0 +1,19 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+   <class name = "bd.lab.OrderLine" table = "pozycje_zamowienia">
+      
+      <composite-id name="id">
+         <key-property name="orderId" column="idZamowienia" />
+         <key-property name="productId" column="idProduktu" />
+     </composite-id>
+      
+      <property name = "cost" column = "cena" type = "int"/>
+      <property name = "tax" column = "vat" type = "int"/>
+      <property name = "quantity" column = "ilosc" type = "int"/>
+      
+   </class>
+</hibernate-mapping>

@@ -1,0 +1,24 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+   <class name = "bd.lab.Invoice" table = "faktury">
+      
+      <meta attribute = "class-description">
+         This class contains the client detail. 
+      </meta>
+      
+      <id name = "id" type = "int" column = "idZamowienia">
+         <generator class="native"/>
+      </id>
+      
+      <property name = "number" column = "nip" type = "string"/>
+      <property name = "clientName" column = "numer" type = "date"/>
+      <property name = "clientAddress" column = "adres" type = "date"/>
+      <property name = "issueDate" column = "dataWystawienia" type = "string"/>
+      <property name = "realizationDate" column = "dataRealizacji " type = "string"/>
+      
+   </class>
+</hibernate-mapping>
