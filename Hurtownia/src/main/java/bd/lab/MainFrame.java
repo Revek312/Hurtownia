@@ -34,6 +34,12 @@ public class MainFrame implements ActionListener {
     String[] columnNamesInvoice = {"Id","Number", "Klient", "Adres", "Data wystawieni", "Data Realizacji"};
     JTable tableInvoice;
 
+    JPanel admin;
+    JPanel products;
+    JPanel orders;
+    JPanel invoices;
+    JPanel clients;
+
     public MainFrame() {
         JFrame frame = new JFrame("Hurtownia");
 
@@ -47,26 +53,36 @@ public class MainFrame implements ActionListener {
 
     private void createUI(final JFrame frame){
         JTabbedPane tabbedPane = new JTabbedPane();
-
-        tabbedPane.addTab("Produkty", this.products());
+        this.products();
+        this.orders();
+        this.invoices();
+        this.admin();
+        this.clients();
+        tabbedPane.addTab("Produkty", this.products;
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
-        tabbedPane.addTab("Klienci", this.clients());
+        tabbedPane.addTab("Klienci", this.clients);
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_2);
 
-        tabbedPane.addTab("Zamowienia", this.orders());
+        tabbedPane.addTab("Zamowienia", this.orders);
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_3);
 
-        tabbedPane.addTab("Faktury", this.invoices());
+        tabbedPane.addTab("Faktury", this.invoices);
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_4);
 
-        tabbedPane.addTab("Admin", this.admin());
+        tabbedPane.addTab("Admin", this.admin);
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_5);
 
         frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }
-
-    private JPanel admin() {
+    private void refreshPanels() {
+        this.admin();
+        this.invoices();
+        this.products();
+        this.orders();
+        this.clients();
+    }
+    private void admin() {
         JPanel panel = new JPanel();
         if (true) {
             JLabel label = new JLabel("Brak uprawnien");
@@ -78,10 +94,10 @@ public class MainFrame implements ActionListener {
         
         buttonPanel.add(addEmployeeButton);
         panel.add(buttonPanel);
-        return panel;
+        this.admin = panel;
     }
 
-    private JPanel products() {
+    private void products() {
         JPanel panel = new JPanel();
         Object[][] data;
         List<Product> products = DBInterface.getAllProducts();
@@ -123,9 +139,9 @@ public class MainFrame implements ActionListener {
         panel.setLayout(new BorderLayout());
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(buttonPanel, BorderLayout.SOUTH);
-        return panel;
+        this.products = panel;
     }
-    private JPanel clients() {
+    private void clients() {
         JPanel panel = new JPanel();        
         Object[][] data;
         List<Client> clients = DBInterface.getAllClients();
@@ -171,9 +187,9 @@ public class MainFrame implements ActionListener {
         panel.setLayout(new BorderLayout());
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(buttonPanel, BorderLayout.SOUTH);
-        return panel;
+        this.clients = panel;
     }
-    private JPanel orders() {
+    private void orders() {
 
         JPanel panel = new JPanel();
         Object[][] data;
@@ -222,9 +238,9 @@ public class MainFrame implements ActionListener {
         panel.setLayout(new BorderLayout());
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(buttonPanel, BorderLayout.SOUTH);
-        return panel;
+        this.orders = panel;
     }
-    private JPanel invoices() {
+    private void invoices() {
         JPanel panel = new JPanel();
         
         List<Invoice> invoices = DBInterface.getAllInvoices();
@@ -261,7 +277,7 @@ public class MainFrame implements ActionListener {
         panel.setLayout(new BorderLayout());
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(buttonPanel, BorderLayout.SOUTH);
-        return panel;
+        this.invoices = panel;
     }
 
     private void productEditQuantity(int id) {
