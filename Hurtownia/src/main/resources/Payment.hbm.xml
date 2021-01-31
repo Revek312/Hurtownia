@@ -14,6 +14,7 @@
       <property name = "tax" column = "podatek" type = "int"/>
       <property name = "date" column = "data" type = "date"/>
       <property name = "paymentMethod" column = "formaPlatnosci" type = "int"/>
+      <property name = "orderId" column = "idZamowienia" type = "int"/>
       
    </class>
 </hibernate-mapping>

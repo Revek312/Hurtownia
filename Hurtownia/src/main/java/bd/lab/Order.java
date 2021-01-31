@@ -10,7 +10,6 @@ public class Order{
 	@GeneratedValue
 	private int id;
 	private int clientId;
-	private int paymentId;
 	private int status;
 	private java.sql.Date date;
 	
@@ -26,12 +25,6 @@ public class Order{
 	}
 	public void setClientId(int clientId) {
 		this.clientId = clientId;
-	}
-	public int getPaymentId() {
-		return paymentId;
-	}
-	public void setPaymentId(int paymentId) {
-		this.paymentId = paymentId;
 	}
 	public int getStatus() {
 		return status;
