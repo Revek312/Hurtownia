@@ -11,7 +11,7 @@
          <key-property name="productId" column="idProduktu" />
      </composite-id>
       
-      <property name = "cost" column = "cena" type = "int"/>
+      <property name = "price" column = "cena" type = "int"/>
       <property name = "tax" column = "vat" type = "int"/>
       <property name = "quantity" column = "ilosc" type = "int"/>
       

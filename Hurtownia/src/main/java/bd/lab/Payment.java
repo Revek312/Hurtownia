@@ -9,6 +9,7 @@ public class Payment {
 	@Id
 	@GeneratedValue
 	private int id;
+	private int orderId;
 	private int value;
 	private int tax;
 	private java.sql.Date date;
@@ -42,6 +43,12 @@ public class Payment {
 	}
 	public void setDate(java.sql.Date date) {
 		this.date = date;
+	}
+	public int getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
 	}
 	
 }

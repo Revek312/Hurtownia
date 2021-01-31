@@ -11,7 +11,6 @@
       </id>
       
       <property name = "clientId" column = "idKlienta" type = "int"/>
-      <property name = "paymentId" column = "idPlatnosci" type = "int"/>
       <property name = "status" column = "status" type = "int"/>
       <property name = "date" column = "data" type = "date"/>
       
