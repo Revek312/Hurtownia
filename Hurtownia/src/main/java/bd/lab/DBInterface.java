@@ -52,6 +52,24 @@ public class DBInterface {
 		
 		return list;
 	}
+	private static boolean removeRecord(Class<?> c, int id) {
+		Session session = factory.openSession();
+		Transaction tx = null;
+		boolean suc = true;
+		try {
+			tx = session.beginTransaction();
+			Object object = session.get(c, id);
+			session.delete(object);
+			tx.commit();
+		} catch(HibernateException e) {
+			if (tx != null) tx.rollback();
+			e.printStackTrace();
+			suc = false;
+		}
+		session.close();
+		
+		return suc;
+	}
 	private static boolean addNewRecord(Object object) {
 		boolean success = true;
 		Session session = factory.openSession();
@@ -179,6 +197,9 @@ public class DBInterface {
 		product.setTax(tax);
 		
 		return updateRecord(product);
+	}
+	public static boolean deleteProduct(int productId) {
+		return removeRecord(Product.class,productId);
 	}
 	public static boolean updateProductAvailability(int productId, int quantity) {
 		ProductAvailability pa = new ProductAvailability();

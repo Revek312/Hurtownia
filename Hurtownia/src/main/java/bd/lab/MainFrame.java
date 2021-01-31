@@ -174,6 +174,7 @@ public class MainFrame implements ActionListener {
         return panel;
     }
     private JPanel orders() {
+
         JPanel panel = new JPanel();
         Object[][] data;
         
@@ -202,8 +203,7 @@ public class MainFrame implements ActionListener {
         	tableOrders = new JTable(data, c);
         	
         }
-        // columnNamesInvoice = {"Id","Klient", "Status", "Data", "Kwota" };
-       // columnNamesOrders = {"Klient", "Id zamowienia"};
+        // columnNamesOrders = {"Klient", "Id zamowienia"};
         tableOrders.setDefaultEditor(Object.class, null);
         JScrollPane scrollPane = new JScrollPane(tableOrders);
         JPanel buttonPanel = new JPanel();
@@ -266,14 +266,31 @@ public class MainFrame implements ActionListener {
 
     private void productEditQuantity(int id) {
         JFrame frame =new JFrame();
-        String newQuantity = JOptionPane.showInputDialog(frame,"Podaj nowa ilosc", "Edycja ilosc produktu: " + id, JOptionPane.INFORMATION_MESSAGE);
+        String quantity = JOptionPane.showInputDialog(frame,"Podaj nowa ilosc", "Edycja ilosc produktu: " + id, JOptionPane.INFORMATION_MESSAGE);
+        if(quantity == null)
+        	return;
+        try {
+        	int q = Integer.parseInt(quantity);
+        	DBInterface.updateProductAvailability(id, q);
+        }
+        catch(Exception e) {}
+        			
     }
     private void productDelete(int id) {
-        JFrame frame=new JFrame();
-        JOptionPane.showMessageDialog(frame,"Usunieto produkt: " + id, "Usuniecie produktu: " + id, JOptionPane.INFORMATION_MESSAGE);
+        //JFrame frame=new JFrame();
+        System.out.print("Delete product id: " + id);
+        if(DBInterface.deleteProduct(id)) {
+        	//JOptionPane.showMessageDialog(frame,"Usunieto produkt: " + id, "Usuniecie produktu: " + id, JOptionPane.INFORMATION_MESSAGE);
+        	System.out.println("Product " + id + " deleted");
+        }
+        else {
+        	//JOptionPane.showMessageDialog(frame,"Nie udalo sie usunac produktu", "Nie udalo sie usunac produktu", JOptionPane.INFORMATION_MESSAGE);
+        	System.out.println("Product " + id + " delete FAILED");
+        }
+        
     }
     private void productCreate() {
-        CreateProduct createProduct= new CreateProduct();
+        CreateProduct createProduct = new CreateProduct();
     }
     private void clientDetails(int id) {
         JFrame frame = new JFrame();
@@ -317,16 +334,24 @@ public class MainFrame implements ActionListener {
         int id = 0;
 
         if(source == editQuantityProducts) {
-            System.out.println("addButtonProducts");
-            if (tableProducts.getSelectedRow() != -1)
-                id = Integer.parseInt(tableProducts.getModel().getValueAt(tableProducts.getSelectedRow(), 1).toString());
-            this.productEditQuantity(id);
+            System.out.println("editQuantityProduct");
+            if (tableProducts.getSelectedRow() != -1) {
+                try {
+                	id = Integer.parseInt(tableProducts.getModel().getValueAt(tableProducts.getSelectedRow(), 0).toString());
+                	this.productEditQuantity(id);
+                }
+                catch(Exception ex) {}
+            }
         }
         else if(source == deleteButtonProducts) {
             System.out.println("deleteButtonProducts");
-            if (tableProducts.getSelectedRow() != -1)
-                id = Integer.parseInt(tableProducts.getModel().getValueAt(tableProducts.getSelectedRow(), 1).toString());
-            this.productDelete(id);
+            if (tableProducts.getSelectedRow() != -1) {
+                try {
+                	id = Integer.parseInt(tableProducts.getModel().getValueAt(tableProducts.getSelectedRow(), 0).toString());
+                	this.productDelete(id);
+                }
+                catch(Exception ex) {}
+            }
         }
         else if(source == createButtonProducts) {
             System.out.println("createButtonProducts");
@@ -417,10 +442,20 @@ public class MainFrame implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Object source = e.getSource();
             if(source == confirm) {
-                System.out.println("confirm\n");
+                try {
+                	String name = nameField.getText();
+                	int price = Integer.parseInt(priceField.getText());
+                	int tax = Integer.parseInt(taxField.getText());
+                	if(DBInterface.addNewProduct(name, price, tax)) {
+                		System.out.println("Product added: " + name);
+                	}
+                }catch(Exception ex) {
+                	
+                }
             }
             else if(source == cancel) {
                 System.out.println("cancel");
+                return;
             }
         }
     }

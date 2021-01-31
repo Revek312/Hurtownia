@@ -14,11 +14,11 @@
          <generator class="native"/>
       </id>
       
-      <property name = "number" column = "nip" type = "string"/>
-      <property name = "clientName" column = "numer" type = "date"/>
-      <property name = "clientAddress" column = "adres" type = "date"/>
-      <property name = "issueDate" column = "dataWystawienia" type = "string"/>
-      <property name = "realizationDate" column = "dataRealizacji " type = "string"/>
+      <property name = "number" column = "numer" type = "string"/>
+      <property name = "clientName" column = "nazwaKlienta" type = "string"/>
+      <property name = "clientAddress" column = "adresKlienta" type = "string"/>
+      <property name = "issueDate" column = "dataWystawienia" type = "date"/>
+      <property name = "realizationDate" column = "dataRealizacji " type = "date"/>
       
    </class>
 </hibernate-mapping>

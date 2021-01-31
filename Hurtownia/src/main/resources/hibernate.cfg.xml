@@ -38,6 +38,6 @@
       <mapping resource = "ProductAvailability.hbm.xml"/>
       <mapping resource = "OrderStatuses.hbm.xml"/>
       <mapping resource = "Order.hbm.xml"/>
-      
+      <mapping resource = "OrderPrice.hbm.xml"/>
    </session-factory>
 </hibernate-configuration>
