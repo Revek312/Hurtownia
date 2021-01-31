@@ -120,10 +120,15 @@ public class DBInterface {
 	public static List<OrderLine> getAllOrderLinesById(int OrderId){
 		return (List<OrderLine>)getRecordsWithConditon("OrderLine", "id="+OrderId);
 	}
-	public static List<ProductAvailability> getAllProductsAvailabilityById(int id){
-		return (List<ProductAvailability>)getRecordsWithConditon("ProductAvailability", "id="+id);
+	public static ProductAvailability getProductAvailabilityById(int id){
+		return ((List<ProductAvailability>)getRecordsWithConditon("ProductAvailability", "id="+id)).get(0);
 	}
-	
+	public static List<OrderStatuses> getAllOrderStatuses(){
+		return (List<OrderStatuses>)getAllRecords("OrderStatuses");
+	}
+	public static OrderPrice getOrderPriceById(int id) {
+		return ((List<OrderPrice>)getRecordsWithConditon("OrderPrice", "id="+id)).get(0);
+	}
 	public static boolean addNewClient(String name, String address, String nip, String phone, String email) {
 		Client newClient = new Client();
 		newClient.setAddress(address);
