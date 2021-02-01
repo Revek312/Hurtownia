@@ -1,10 +1,19 @@
 package bd.lab;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.security.CodeSource;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -257,9 +266,70 @@ public class DBInterface {
 	
 	public static void createBackup() {
 		
+	        String mysqldumpPath = "C:\\\"Program Files\"\\MySQL\\\"MySQL Server 8.0\"\\bin\\";
+
+	        String savePath = "C:\\backups\\backup.sql";
+
+	        String executeCmd = mysqldumpPath + "mysqldump -u root --password=\"root\" hurtownia > " + savePath;
+
+	        System.out.println(executeCmd);
+	        ProcessBuilder builder = new ProcessBuilder(
+	                "cmd.exe", "/c", executeCmd);
+	            builder.redirectErrorStream(true);
+	            Process p = null;
+				try {
+					p = builder.start();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	            String line = null;
+	            while (true) {
+	                try {
+						line = r.readLine();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+	                if (line == null) { break; }
+	                System.out.println(line);
+	            }
 	}
 	
-	public static void restoreFromBackup(String backup) {
-		
+	public static void restoreFromBackup() {
+
+		JOptionPane.showMessageDialog(new JFrame(), "Wklej to do cmd line: mysql -u root -p < C:\\backups\\backup.sql");
+        //String mysqldumpPath = "C:\\\"Program Files\"\\MySQL\\\"MySQL Server 8.0\"\\bin\\";
+
+//        String savePath = "C:\\backups\\backup.sql";
+//
+//        String executeCmd = "mysql -u root --password=\"root\" hurtownia < " + savePath;
+//
+//        System.out.println(executeCmd);
+//        try {
+//			Runtime.getRuntime().exec(  new String [] {"mysql", "-u", "root", "--password", "\"root\"", "hurtownia","<",savePath});
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//        ProcessBuilder builder = new ProcessBuilder(
+//                "cmd.exe", "/c", executeCmd);
+//        builder.redirectErrorStream(true);
+//        Process p = null;
+//		try {
+//			p = builder.start();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+//        String line = null;
+//        while (true) {
+//            try {
+//				line = r.readLine();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//            if (line == null) { break; }
+//            System.out.println(line);
+//        }
 	}
 }
