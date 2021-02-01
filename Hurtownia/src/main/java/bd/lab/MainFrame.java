@@ -33,7 +33,10 @@ public class MainFrame implements ActionListener {
 
     String[] columnNamesInvoice = {"Id","Number", "Klient", "Adres", "Data wystawieni", "Data Realizacji"};
     JTable tableInvoice;
-
+    
+    JButton makeBackup = new JButton("Stwórz backup");
+    JButton loadBackup = new JButton("Wczytaj backup");
+    
     JPanel admin;
     JPanel products;
     JPanel orders;
@@ -98,16 +101,18 @@ public class MainFrame implements ActionListener {
     }
     private void admin() {
         JPanel panel = new JPanel();
-        if (true) {
+        if (false) {
             JLabel label = new JLabel("Brak uprawnien");
             panel.add(label);
             this.admin = panel;
             return;
         }
+        makeBackup.addActionListener(this);
+        loadBackup.addActionListener(this);
         JPanel buttonPanel = new JPanel();
-        JButton addEmployeeButton = new JButton("Dodaj pracownika");
-        
-        buttonPanel.add(addEmployeeButton);
+        buttonPanel.add(makeBackup);
+        buttonPanel.add(loadBackup);
+
         panel.add(buttonPanel);
         this.admin = panel;
     }
@@ -464,6 +469,16 @@ public class MainFrame implements ActionListener {
                 }
             }
         }
+        else if(source == makeBackup) {
+            System.out.println("make backup");
+            DBInterface.createBackup();
+        }
+        else if(source == loadBackup) {
+            System.out.println("load backup");
+            String backup = JOptionPane.showInputDialog(new JFrame("Backyp"), "Podaj nazwê backupu");
+            DBInterface.restoreFromBackup(backup);
+        }
+        
         refreshPanels();
     }
 

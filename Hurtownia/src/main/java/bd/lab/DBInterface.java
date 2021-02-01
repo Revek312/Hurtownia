@@ -255,4 +255,11 @@ public class DBInterface {
 		return removeRecord(Client.class,clientId);
 	}
 	
+	public static void createBackup() {
+		
+	}
+	
+	public static void restoreFromBackup(String backup) {
+		
+	}
 }
