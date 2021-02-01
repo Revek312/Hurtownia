@@ -10,15 +10,14 @@
          This class contains the client detail. 
       </meta>
       
-      <id name = "id" type = "int" column = "idZamowienia">
+      <id name = "id" type = "int" column = "idFaktury">
          <generator class="native"/>
       </id>
       
-      <property name = "number" column = "numer" type = "string"/>
+      <property name = "orderId" column = "idZamowienia" type = "int"/>
       <property name = "clientName" column = "nazwaKlienta" type = "string"/>
       <property name = "clientAddress" column = "adresKlienta" type = "string"/>
-      <property name = "issueDate" column = "dataWystawienia" type = "date"/>
-      <property name = "realizationDate" column = "dataRealizacji " type = "date"/>
+      <property name = "issueDate" column = "dataWystawienia" type = "date" insert="false"/>
       
    </class>
 </hibernate-mapping>
