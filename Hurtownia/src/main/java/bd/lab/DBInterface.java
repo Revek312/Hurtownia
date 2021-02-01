@@ -75,7 +75,7 @@ public class DBInterface {
 		
 		return suc;
 	}
-	private static boolean addNewRecord(Object object) {
+	public static boolean addNewRecord(Object object) {
 		boolean success = true;
 		Session session = factory.openSession();
 		Transaction tx = null;
@@ -83,7 +83,7 @@ public class DBInterface {
 			tx = session.beginTransaction();
 			session.persist(object);
 			tx.commit();
-		} catch(HibernateException e) {
+		} catch(Exception e) {
 			if (tx != null) tx.rollback();
 			e.printStackTrace();
 			success = false;
@@ -110,8 +110,10 @@ public class DBInterface {
 	
 	@SuppressWarnings("unchecked")
 	public static boolean login(String name, String password) throws UnsupportedEncodingException, NoSuchAlgorithmException{
+		System.out.println("login");
 		String properName = "\'" + name + "\'";
 		List<Employee> employee = ((List<Employee>) getRecordsWithConditon("Employee", "name="+properName));
+		System.out.println("E : " + employee.size());
 		if (employee.get(0) != null) {
 			String statement = "id=" + employee.get(0).getId();
 			List<EmployeesPasswords> employeePassword = (List<EmployeesPasswords>) getRecordsWithConditon("EmployeesPasswords", statement);
@@ -120,22 +122,27 @@ public class DBInterface {
 				digest.reset();
 				digest.update(password.getBytes("utf8"));
 				String sha1 = String.format("%040x", new BigInteger(1, digest.digest()));
+				System.out.println(name + " " + sha1);
 				if (employeePassword.get(0).getPass().equals(sha1)) {
 					switch (employee.get(0).getPosition()) {
 						case 1:
 							System.out.println("Logging in as employee");
+							factory.close();
 							factory = HibernateFactory.getSessionFactoryAsEmployee();
 							return true;
 						case 2:
 							System.out.println("Logging in as manager");
+							factory.close();
 							factory = HibernateFactory.getSessionFactoryAsManager();
 							return true;
 						case 3:
 							System.out.println("Logging in as CEO");
+							factory.close();
 							factory = HibernateFactory.getSessionFactoryAsRoot();
 							return true;
 						case 4:
 							System.out.println("Logging in as root");
+							factory.close();
 							factory = HibernateFactory.getSessionFactoryAsRoot();
 							return true;
 					}
@@ -178,7 +185,7 @@ public class DBInterface {
 	}
 	
 	public static List<OrderLine> getAllOrderLinesById(int OrderId){
-		return (List<OrderLine>)getRecordsWithConditon("OrderLine", "id="+OrderId);
+		return (List<OrderLine>)getRecordsWithConditon("OrderLine", "id.orderId="+OrderId);
 	}
 	public static ProductAvailability getProductAvailabilityById(int id){
 		return ((List<ProductAvailability>)getRecordsWithConditon("ProductAvailability", "id="+id)).get(0);
@@ -187,8 +194,15 @@ public class DBInterface {
 		return (List<OrderStatuses>)getAllRecords("OrderStatuses");
 	}
 	public static OrderPrice getOrderPriceById(int id) {
-		return ((List<OrderPrice>)getRecordsWithConditon("OrderPrice", "id="+id)).get(0);
+		List<OrderPrice> list = (List<OrderPrice>)getRecordsWithConditon("OrderPrice", "id="+id);
+		if (list == null || list.size() == 0)
+			return null;
+		else return list.get(0);
 	}
+	public static Product getProductById(int id) {
+		return ((List<Product>)getRecordsWithConditon("Product", "id="+id)).get(0);
+	}
+	
 	public static boolean addNewClient(String name, String address, String nip, String phone, String email) {
 		Client newClient = new Client();
 		newClient.setAddress(address);
@@ -253,6 +267,22 @@ public class DBInterface {
 	}
 	public static boolean deleteClient(int clientId) {
 		return removeRecord(Client.class,clientId);
+	}
+	public static int saveOrder(Order o) {
+		int userId = 0;
+		Session session = factory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			userId = (Integer) session.save(o);
+			tx.commit();
+			return userId;
+		} catch(HibernateException e) {
+			if (tx != null) tx.rollback();
+			e.printStackTrace();
+		}
+		session.close();
+		return userId;
 	}
 	
 	public static void createBackup() {

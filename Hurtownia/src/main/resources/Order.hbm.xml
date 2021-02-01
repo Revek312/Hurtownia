@@ -11,8 +11,8 @@
       </id>
       
       <property name = "clientId" column = "idKlienta" type = "int"/>
-      <property name = "status" column = "status" type = "int"/>
-      <property name = "date" column = "data" type = "date"/>
+      <property name = "status" column = "status" type = "int" insert="false"/>
+      <property name = "date" column = "data" type = "date" insert="false"/>
       
    </class>
 </hibernate-mapping>

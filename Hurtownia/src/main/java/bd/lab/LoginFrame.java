@@ -60,6 +60,7 @@ public class LoginFrame implements ActionListener{
     	this.frame.dispose();
     }
     private void checkLogin(String name, String password) {
+    	System.out.println("CheckLogin");
     	try {
     		logged = DBInterface.login(name, password);
         }
