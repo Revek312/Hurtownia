@@ -302,6 +302,9 @@ public class DBInterface {
 		return userId;
 	}
 	
+	public static List<Order> getClientsOrdersByID(int id) {
+		return ((List<Order>)getRecordsWithConditon("Order", "clientId="+id));
+	}
 	public static void createBackup() {
 		
 	        String mysqldumpPath = "C:\\\"Program Files\"\\MySQL\\\"MySQL Server 8.0\"\\bin\\";

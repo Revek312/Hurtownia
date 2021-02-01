@@ -23,6 +23,7 @@ public class MainFrame implements ActionListener {
     JButton addButtonClients = new JButton("Dodaj klienta");
     JButton editButtonClients = new JButton("Edytuj dane");
     JButton deleteButtonClients = new JButton("Usun");
+    JButton showClientsOrders = new JButton("Pokaz zamowienia");
     String[] columnNamesClients = {"Id", "Nazwa", "NIP", "Adres", "Email", "Telefon"};
     JTable tableClients;
 
@@ -202,10 +203,12 @@ public class MainFrame implements ActionListener {
         addButtonClients.addActionListener(this);
         editButtonClients.addActionListener(this);
         deleteButtonClients.addActionListener(this);
-
+        showClientsOrders.addActionListener(this);
+        
         buttonPanel.add(addButtonClients);
         buttonPanel.add(editButtonClients);
         buttonPanel.add(deleteButtonClients);
+        buttonPanel.add(showClientsOrders);
 
         tableClients.setFillsViewportHeight(true);
         panel.setLayout(new BorderLayout());
@@ -483,8 +486,58 @@ public class MainFrame implements ActionListener {
             System.out.println("load backup");
             DBInterface.restoreFromBackup();
         }
-        
+        else if(source == showClientsOrders) {
+            System.out.println("show clients order");
+        	if (tableClients.getSelectedRow() != -1) {
+                try {
+                	id = Integer.parseInt(tableClients.getModel().getValueAt(tableClients.getSelectedRow(), 0).toString());
+                	this.showClientsOrders(id);
+                }
+                catch(Exception ex) {}
+            }
+        }
     }
+    private void showClientsOrders(int id) {
+    	Object[][] data;
+    	JTable table = new JTable();
+        List<Order> orders = DBInterface.getClientsOrdersByID(id);
+        if(orders != null) {
+	        Iterator<Order> it = orders.iterator();
+	        data = new Object[orders.size()][columnNamesOrders.length];
+	        List<OrderStatuses> statuses = DBInterface.getAllOrderStatuses();
+	        int i = 0;
+	        while(it.hasNext()) {
+	        	Order o = it.next();
+	        	OrderPrice op = DBInterface.getOrderPriceById(o.getId());
+	        	data[i][0] = o.getId();
+	        	data[i][1] = o.getClientId();
+	        	data[i][2] = statuses.get(o.getStatus()-1).getName();
+	        	data[i][3] = o.getDate();
+	        	if(op != null)
+	        		data[i][4] = op.getPrice();
+	        	else data[i][4] = 0;
+	        	i++;
+	        }
+	        table = new JTable(data, columnNamesOrders);
+	        System.out.println("Fetched " + orders.size() + " orders");
+        }
+        else {
+        	data = new Object[1][1];
+        	data[0][0] = "Brak zamowien";
+        	String[] c = {"Brak zamowien"};
+        	table = new JTable(data, c);
+        }
+        JFrame frame = new JFrame("Produkty klienta: " + id);
+        JScrollPane productsPanel = new JScrollPane(table);
+
+        frame.add(productsPanel);
+        frame.setLayout(new GridLayout(1,2));
+
+        frame.setSize(500,300);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+	}
     
     class IssueInvoice implements ActionListener {
     	
@@ -908,6 +961,7 @@ public class MainFrame implements ActionListener {
             panel.setLayout(new GridLayout(6,2,10,10));
             frame.add(panel);
             frame.setSize(300,240);
+            
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
