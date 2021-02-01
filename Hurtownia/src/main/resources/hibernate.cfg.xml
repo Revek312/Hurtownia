@@ -39,5 +39,6 @@
       <mapping resource = "OrderStatuses.hbm.xml"/>
       <mapping resource = "Order.hbm.xml"/>
       <mapping resource = "OrderPrice.hbm.xml"/>
+      <mapping resource = "EmployeesPasswords.hbm.xml"/>
    </session-factory>
 </hibernate-configuration>
