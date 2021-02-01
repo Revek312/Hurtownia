@@ -31,8 +31,9 @@ public class MainFrame implements ActionListener {
     JButton detailsButtonOrders = new JButton("Szczegoly");
     String[] columnNamesOrders = {"Id","Klient", "Status", "Data", "Kwota" };
     JTable tableOrders;
-
-    String[] columnNamesInvoice = {"Id","Number", "Klient", "Adres", "Data wystawieni", "Data Realizacji"};
+    
+    JButton issueButtonInvoice = new JButton("Wystaw");
+    String[] columnNamesInvoice = {"Numer","Zamowienie", "Klient", "Adres", "Data wystawieni"};
     JTable tableInvoice;
     
     JButton makeBackup = new JButton("Stwórz backup");
@@ -285,13 +286,13 @@ public class MainFrame implements ActionListener {
 	        while(it.hasNext()) {
 	        	Invoice in = it.next();
 	        	data[i][0] = in.getId();
-	        	data[i][1] = in.getNumber();
+	        	data[i][1] = in.getOrderId();
 	        	data[i][2] = in.getClientName();
 	        	data[i][3] = in.getClientAddress();
 	        	data[i][4] = in.getIssueDate();
-	        	data[i][5] = in.getRealizationDate();
+	        	i++;
 	        }
-	        dataModel = new DefaultTableModel(data, columnNamesClients);
+	        dataModel = new DefaultTableModel(data, columnNamesInvoice);
 	        if(tableInvoice == null)
 	        	tableInvoice = new JTable(dataModel);
 	        else {
@@ -315,6 +316,9 @@ public class MainFrame implements ActionListener {
         updateInvoicesValues();
         JScrollPane scrollPane = new JScrollPane(tableInvoice);
         JPanel buttonPanel = new JPanel();
+        
+        issueButtonInvoice.addActionListener(this);
+        buttonPanel.add(issueButtonInvoice);
 
         tableInvoice.setFillsViewportHeight(true);
         panel.setLayout(new BorderLayout());
@@ -373,13 +377,26 @@ public class MainFrame implements ActionListener {
         CreateOrder createOrder = new CreateOrder();
     }
     private void orderPay(int id) {
-        JFrame frame =new JFrame();
-        String newData = JOptionPane.showInputDialog(frame,"Ile hajsu: ", "Oplacenie: " + id, JOptionPane.INFORMATION_MESSAGE);
+    	try {
+	        JFrame frame =new JFrame();
+	        String newData = JOptionPane.showInputDialog(frame,"Forma platnosci: ", JOptionPane.INFORMATION_MESSAGE);
+	        int idP = Integer.parseInt(newData);
+	        OrderPrice op = new OrderPrice();
+	        op = DBInterface.getOrderPriceById(id);
+	        DBInterface.addNewPayment(id, op.getPrice(), 23, idP);
+	        updateInvoicesValues();
+	        updateOrdersValues();
+    	}
+    	catch (Exception ex) {}
     }
     private void orderDetails(int id) {
     	ViewOrderLines v = new ViewOrderLines(id);
     }
 
+    private void invoiceIssue() {
+    	IssueInvoice ii = new IssueInvoice();
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
@@ -455,6 +472,9 @@ public class MainFrame implements ActionListener {
                 }
             }
         }
+        else if(source == issueButtonInvoice) {
+        	invoiceIssue();
+        }
         else if(source == makeBackup) {
             System.out.println("make backup");
             DBInterface.createBackup();
@@ -463,6 +483,96 @@ public class MainFrame implements ActionListener {
             System.out.println("load backup");
             DBInterface.restoreFromBackup();
         }
+        
+    }
+    
+    class IssueInvoice implements ActionListener {
+    	
+    	JLabel nameLabel = new JLabel("Podaj numer");
+    	JTextField nameField = new JTextField();
+    	JButton confirm = new JButton("Wystaw");
+    	String[] columnNames = {"id", "klient", "Ilosc"};
+        JTable table;
+    	
+    	public IssueInvoice() {
+    		updateTable();
+    		JFrame frame = new JFrame("Wybierz zamowienie");
+            JPanel clientPanel = new JPanel();
+            clientPanel.setLayout(new GridLayout(3,1));
+            JScrollPane orderPanels = new JScrollPane(table);
+            
+            confirm.addActionListener(this);
+            //clientPanel.add(nameLabel);
+            //clientPanel.add(clientField);
+            //clientPanel.add(confirm);
+          //  clientPanel.add(nameLabel);
+           // clientPanel.add(nameField);
+            clientPanel.add(orderPanels);
+            clientPanel.add(confirm);
+            frame.add(clientPanel);
+            //frame.add(productsPanel);
+
+            frame.setLayout(new GridLayout(1,1));
+
+            frame.setSize(500,300);
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+    	}
+    	private void updateTable() {
+    		List<Order> lines = DBInterface.getAllOrders();
+    		if(lines == null || lines.size() == 0) {
+        		System.out.println("No data");
+        		Object[][] data = {{"Brak danych"}};
+        		String[] c = {"Brak danych"};
+        		if(table == null)
+        			table = new JTable(data, c);
+        		else
+        			table.setModel(new DefaultTableModel(data,c));
+        	}
+        	else {
+        		System.out.println("With data " + lines.size());
+        		Iterator<Order> it = lines.iterator();
+        		String[] c = {"id", "Klient", "Data"};
+        		Object[][] data = new Object[lines.size()][c.length];
+        		int i = 0;
+        		while(it.hasNext()) {
+        			Order o = it.next();
+        			if( o.getStatus() != 2)
+        				continue;
+        			
+        			data[i][0] = o.getId();
+        			data[i][1] = o.getClientId();
+        			data[i][2] = o.getDate();
+        			System.out.println("[" + i + "] : " + o.getId());
+        			i++;
+        		}
+        		
+        		if(table == null)
+        			table = new JTable(new DefaultTableModel(data, c));
+        		else
+        			table.setModel(new DefaultTableModel(data,c));
+                
+        	}
+
+    	}
+    	
+    	public void actionPerformed(ActionEvent e) {
+    		Object source = e.getSource();
+            if(source == confirm) {
+            	try {
+            		int orderId = Integer.parseInt(table.getModel().getValueAt(table.getSelectedRow(), 0).toString());
+            		int clientId = Integer.parseInt(table.getModel().getValueAt(table.getSelectedRow(), 1).toString());
+            		Client client = ((List<Client>)DBInterface.getRecordsWithConditon("Client", "id="+clientId)).get(0);
+            		System.out.println("Adding invoice " + orderId);
+            		DBInterface.addNewInvoice(orderId, client.getName(), client.getAddress());
+            		updateInvoicesValues();
+            		updateOrdersValues();
+            		updateTable();
+            	}
+            	catch(Exception ex) {}
+            }
+    	}
     }
     
     class ViewOrderLines implements ActionListener {

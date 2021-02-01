@@ -50,7 +50,7 @@ public class DBInterface {
 		return list;
 	}
 	@SuppressWarnings({"unchecked", "rawtypes" })
-	private static List getRecordsWithConditon(String table, String condition) {
+	public static List getRecordsWithConditon(String table, String condition) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 		List<Client> list = null;
@@ -228,9 +228,9 @@ public class DBInterface {
 		newProduct.setTax(tax);
 		return addNewRecord(newProduct);
 	}
-	public static boolean addNewPayment(java.sql.Date date, int value, int tax, int paymentMethod) {
+	public static boolean addNewPayment(int orderId, int value, int tax, int paymentMethod) {
 		Payment newPayment = new Payment();
-		newPayment.setDate(date);
+		newPayment.setOrderId(orderId);
 		newPayment.setTax(tax);
 		newPayment.setValue(value);
 		newPayment.setPaymentMethod(paymentMethod);
@@ -252,6 +252,14 @@ public class DBInterface {
 		newOL.setTax(tax);
 		newOL.setQuantity(quantity);
 		return addNewRecord(newOL);
+	}
+	public static boolean addNewInvoice(int orderId, String clientName, String clientAddress) {
+		Invoice i = new Invoice();
+		i.setOrderId(orderId);
+		i.setClientAddress(clientAddress);
+		i.setClientName(clientName);
+		
+		return addNewRecord(i);
 	}
 	
 	public static boolean updateProduct(int productId, String name, int price, int tax) {

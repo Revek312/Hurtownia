@@ -9,22 +9,16 @@ public class Invoice {
 	@Id
 	@GeneratedValue
 	private int id;
-	private String number;
+	
+	private int orderId;
 	private String clientName;
 	private String clientAddress;
 	private java.sql.Date issueDate;
-	private java.sql.Date realizationDate;
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
-	}
-	public String getNumber() {
-		return number;
-	}
-	public void setNumber(String number) {
-		this.number = number;
 	}
 	public String getClientName() {
 		return clientName;
@@ -38,16 +32,16 @@ public class Invoice {
 	public void setClientAddress(String clientAddress) {
 		this.clientAddress = clientAddress;
 	}
-	public java.sql.Date getRealizationDate() {
-		return realizationDate;
-	}
-	public void setRealizationDate(java.sql.Date realizationDate) {
-		this.realizationDate = realizationDate;
-	}
 	public java.sql.Date getIssueDate() {
 		return issueDate;
 	}
 	public void setIssueDate(java.sql.Date issueDate) {
 		this.issueDate = issueDate;
+	}
+	public int getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
 	}
 }
