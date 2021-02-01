@@ -121,6 +121,7 @@ public class DBInterface {
 	}
 	@SuppressWarnings("unchecked")
 	public static List<Product> getAllProducts(){
+		System.out.println("GetAllProducts");
 		return (List<Product>)getAllRecords("Product");
 	}
 	@SuppressWarnings("unchecked")
@@ -135,8 +136,8 @@ public class DBInterface {
 		return (List<OrderLine>)getAllRecords("OrderLine");
 	}
 	
-	public static List<OrderLine> getAllOrderLinesById(int OrderId){
-		return (List<OrderLine>)getRecordsWithConditon("OrderLine", "id="+OrderId);
+	public static List<OrderLine> getAllOrderLinesById(int id){
+		return (List<OrderLine>)getRecordsWithConditon("OrderLine", "id="+id);
 	}
 	public static ProductAvailability getProductAvailabilityById(int id){
 		return ((List<ProductAvailability>)getRecordsWithConditon("ProductAvailability", "id="+id)).get(0);
@@ -147,6 +148,7 @@ public class DBInterface {
 	public static OrderPrice getOrderPriceById(int id) {
 		return ((List<OrderPrice>)getRecordsWithConditon("OrderPrice", "id="+id)).get(0);
 	}
+	
 	public static boolean addNewClient(String name, String address, String nip, String phone, String email) {
 		Client newClient = new Client();
 		newClient.setAddress(address);
@@ -198,9 +200,7 @@ public class DBInterface {
 		
 		return updateRecord(product);
 	}
-	public static boolean deleteProduct(int productId) {
-		return removeRecord(Product.class,productId);
-	}
+
 	public static boolean updateProductAvailability(int productId, int quantity) {
 		ProductAvailability pa = new ProductAvailability();
 		pa.setId(productId);
@@ -208,4 +208,11 @@ public class DBInterface {
 		return updateRecord(pa);
 	}
 
+	public static boolean deleteProduct(int productId) {
+		return removeRecord(Product.class,productId);
+	}
+	public static boolean deleteClient(int clientId) {
+		return removeRecord(Client.class,clientId);
+	}
+	
 }

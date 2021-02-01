@@ -3,6 +3,9 @@ package bd.lab;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,21 +19,18 @@ public class MainFrame implements ActionListener {
     String[] columnNamesProducts = {"Id", "Nazwa", "Cena", "Ilosc"};
     JTable tableProducts;
 
-    JButton detailsButtonClients = new JButton("Szczegoly");
     JButton addButtonClients = new JButton("Dodaj klienta");
     JButton editButtonClients = new JButton("Edytuj dane");
     JButton deleteButtonClients = new JButton("Usun");
     String[] columnNamesClients = {"Id", "Nazwa", "NIP", "Adres", "Email", "Telefon"};
     JTable tableClients;
 
-    JButton detailsButtonOrders = new JButton("Szczegoly");
     JButton payButtonOrders = new JButton("Oplac");
-    JButton editButtonOrders = new JButton("Edytuj dane");
     JButton createButtonOrders = new JButton("Stworz");
+    JButton detailsButtonOrders = new JButton("Szczegoly");
     String[] columnNamesOrders = {"Id","Klient", "Status", "Data", "Kwota" };
     JTable tableOrders;
 
-    JButton detailsButtonInvoice = new JButton("Szczegoly");
     String[] columnNamesInvoice = {"Id","Number", "Klient", "Adres", "Data wystawieni", "Data Realizacji"};
     JTable tableInvoice;
 
@@ -58,7 +58,7 @@ public class MainFrame implements ActionListener {
         this.invoices();
         this.admin();
         this.clients();
-        tabbedPane.addTab("Produkty", this.products;
+        tabbedPane.addTab("Produkty", this.products);
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
         tabbedPane.addTab("Klienci", this.clients);
@@ -76,18 +76,33 @@ public class MainFrame implements ActionListener {
         frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }
     private void refreshPanels() {
-        this.admin();
-        this.invoices();
-        this.products();
-        this.orders();
-        this.clients();
+    	/*System.out.println("Refresh");
+    	this.updateClientsValues();
+    	this.updateInvoicesValues();
+    	this.updateOrdersValues();
+    	this.updateProductsValues();
+    	
+    	this.admin.revalidate();
+        this.admin.repaint();
+        this.products.revalidate();
+        this.products.repaint();
+        this.orders.revalidate();
+        this.orders.repaint();
+        this.invoices.revalidate();
+        this.invoices.repaint();
+        this.clients.revalidate();
+        this.clients.repaint();
+        */
+    	updateProductsValues();
+    	
     }
     private void admin() {
         JPanel panel = new JPanel();
         if (true) {
             JLabel label = new JLabel("Brak uprawnien");
             panel.add(label);
-            return panel;
+            this.admin = panel;
+            return;
         }
         JPanel buttonPanel = new JPanel();
         JButton addEmployeeButton = new JButton("Dodaj pracownika");
@@ -96,10 +111,9 @@ public class MainFrame implements ActionListener {
         panel.add(buttonPanel);
         this.admin = panel;
     }
-
-    private void products() {
-        JPanel panel = new JPanel();
-        Object[][] data;
+    private void updateProductsValues() {
+    	DefaultTableModel tableModel;
+    	Object[][] data;
         List<Product> products = DBInterface.getAllProducts();
         if(products != null) {
 	        Iterator<Product> it = products.iterator();
@@ -114,7 +128,14 @@ public class MainFrame implements ActionListener {
 	        	data[i][3] = a.getQuantity();
 	        	i++;
 	        }
-	        tableProducts = new JTable(data, columnNamesProducts);
+	        tableModel = new DefaultTableModel(data, columnNamesProducts);
+	        if(tableProducts == null) {
+	        	tableProducts = new JTable(tableModel);
+	        }
+	        else {
+		        tableProducts.setModel(tableModel);
+		        tableProducts.revalidate();
+	        }
         }
         else {
         	data = new Object[1][1];
@@ -124,6 +145,13 @@ public class MainFrame implements ActionListener {
         }
         //String[] columnNamesProducts = {"Nazwa", "Cena", "Ilosc"};
         tableProducts.setDefaultEditor(Object.class, null);
+        tableProducts.revalidate();
+        tableProducts.repaint();
+        
+    }
+    private void products() {
+        JPanel panel = new JPanel();
+        updateProductsValues();
         JScrollPane scrollPane = new JScrollPane(tableProducts);
         JPanel buttonPanel = new JPanel();
 
@@ -141,9 +169,9 @@ public class MainFrame implements ActionListener {
         panel.add(buttonPanel, BorderLayout.SOUTH);
         this.products = panel;
     }
-    private void clients() {
-        JPanel panel = new JPanel();        
-        Object[][] data;
+    private void updateClientsValues() {
+    	Object[][] data;
+    	DefaultTableModel dataModel;
         List<Client> clients = DBInterface.getAllClients();
         if(clients != null) {
 	        Iterator<Client> it = clients.iterator();
@@ -159,7 +187,14 @@ public class MainFrame implements ActionListener {
 	        	data[i][5] = c.getPhone();
 	        	i++;
 	        }
-	        tableClients = new JTable(data, columnNamesClients);
+	        dataModel = new DefaultTableModel(data, columnNamesClients);
+	        if(tableClients == null)
+	        	tableClients = new JTable(dataModel);
+	        else {
+	        	tableClients.setModel(dataModel);
+	        	tableClients.revalidate();
+	        }
+	        System.out.println("Fetched " + clients.size() + " clients");
         }
         else {
         	data = new Object[1][1];
@@ -169,16 +204,18 @@ public class MainFrame implements ActionListener {
         }
         //String[] columnNamesClients = {"Id", "Nazwa", "NIP", "Adres", "Email", "Telefon"};
         tableClients.setDefaultEditor(Object.class, null);
-        
+        tableProducts.revalidate();
+    }
+    private void clients() {
+        JPanel panel = new JPanel();        
+        updateClientsValues();
         JScrollPane scrollPane = new JScrollPane(tableClients);
         JPanel buttonPanel = new JPanel();
 
-        detailsButtonClients.addActionListener(this);
         addButtonClients.addActionListener(this);
         editButtonClients.addActionListener(this);
         deleteButtonClients.addActionListener(this);
 
-        buttonPanel.add(detailsButtonClients);
         buttonPanel.add(addButtonClients);
         buttonPanel.add(editButtonClients);
         buttonPanel.add(deleteButtonClients);
@@ -189,11 +226,9 @@ public class MainFrame implements ActionListener {
         panel.add(buttonPanel, BorderLayout.SOUTH);
         this.clients = panel;
     }
-    private void orders() {
-
-        JPanel panel = new JPanel();
-        Object[][] data;
-        
+    private void updateOrdersValues() {
+    	Object[][] data;
+    	DefaultTableModel dataModel;
         List<Order> orders = DBInterface.getAllOrders();
         if(orders != null) {
 	        Iterator<Order> it = orders.iterator();
@@ -210,7 +245,14 @@ public class MainFrame implements ActionListener {
 	        	data[i][4] = op.getPrice();
 	        	i++;
 	        }
-	        tableOrders = new JTable(data, columnNamesOrders);
+	        dataModel = new DefaultTableModel(data, columnNamesOrders);
+	        if(tableOrders == null)
+	        	tableOrders = new JTable(dataModel);
+	        else {
+	        	tableOrders.setModel(dataModel);
+	        	tableOrders.revalidate();
+	        }
+	        System.out.println("Fetched " + orders.size() + " orders");
         }
         else {
         	data = new Object[1][1];
@@ -221,18 +263,22 @@ public class MainFrame implements ActionListener {
         }
         // columnNamesOrders = {"Klient", "Id zamowienia"};
         tableOrders.setDefaultEditor(Object.class, null);
+        tableProducts.revalidate();
+    }
+    private void orders() {
+
+        JPanel panel = new JPanel();
+        updateOrdersValues();
         JScrollPane scrollPane = new JScrollPane(tableOrders);
         JPanel buttonPanel = new JPanel();
 
-        detailsButtonOrders.addActionListener(this);
         payButtonOrders.addActionListener(this);
-        editButtonOrders.addActionListener(this);
         createButtonOrders.addActionListener(this);
+        detailsButtonOrders.addActionListener(this);
 
-        buttonPanel.add(detailsButtonOrders);
         buttonPanel.add(createButtonOrders);
-        buttonPanel.add(editButtonOrders);
         buttonPanel.add(payButtonOrders);
+        buttonPanel.add(detailsButtonOrders);
 
         tableOrders.setFillsViewportHeight(true);
         panel.setLayout(new BorderLayout());
@@ -240,11 +286,10 @@ public class MainFrame implements ActionListener {
         panel.add(buttonPanel, BorderLayout.SOUTH);
         this.orders = panel;
     }
-    private void invoices() {
-        JPanel panel = new JPanel();
-        
-        List<Invoice> invoices = DBInterface.getAllInvoices();
+    private void updateInvoicesValues() {
+    	List<Invoice> invoices = DBInterface.getAllInvoices();
         Object[][] data;
+        DefaultTableModel dataModel;
         if(invoices != null) {
 	        Iterator<Invoice> it = invoices.iterator();
 	        data = new Object[invoices.size()][columnNamesInvoice.length];
@@ -258,7 +303,14 @@ public class MainFrame implements ActionListener {
 	        	data[i][4] = in.getIssueDate();
 	        	data[i][5] = in.getRealizationDate();
 	        }
-	        tableInvoice = new JTable(data, columnNamesInvoice);
+	        dataModel = new DefaultTableModel(data, columnNamesClients);
+	        if(tableInvoice == null)
+	        	tableInvoice = new JTable(dataModel);
+	        else {
+	        	tableInvoice.setModel(dataModel);
+	        	tableInvoice.revalidate();
+	        }
+	        System.out.println("Fetched " + invoices.size() + " invoices");
         }
         else {
         	data = new Object[1][1];
@@ -268,10 +320,13 @@ public class MainFrame implements ActionListener {
         }
         //  String[] columnNamesInvoice = {"Id","Number", "Klient", "Adres", "Data wystawieni", "Data Realizacji"};
         tableInvoice.setDefaultEditor(Object.class, null);
+        tableProducts.revalidate();
+    }
+    private void invoices() {
+        JPanel panel = new JPanel();
+        updateInvoicesValues();
         JScrollPane scrollPane = new JScrollPane(tableInvoice);
         JPanel buttonPanel = new JPanel();
-        detailsButtonInvoice.addActionListener(this);
-        buttonPanel.add(detailsButtonInvoice);
 
         tableInvoice.setFillsViewportHeight(true);
         panel.setLayout(new BorderLayout());
@@ -308,10 +363,6 @@ public class MainFrame implements ActionListener {
     private void productCreate() {
         CreateProduct createProduct = new CreateProduct();
     }
-    private void clientDetails(int id) {
-        JFrame frame = new JFrame();
-        JOptionPane.showMessageDialog(frame,"Klient: " + id, "Szczegoly klienta: " + id, JOptionPane.INFORMATION_MESSAGE);
-    }
     private void clientAdd() {
         CreateClient createClient= new CreateClient();
     }
@@ -321,28 +372,23 @@ public class MainFrame implements ActionListener {
     }
     private void clientDelete(int id) {
         JFrame frame = new JFrame();
-        JOptionPane.showMessageDialog(frame,"Klient " + id + " zostal usuniety.", "Usuniecie klienta: " + id, JOptionPane.INFORMATION_MESSAGE);
-    }
-    private void orderDetails(int id) {
-        JFrame frame = new JFrame();
-        JOptionPane.showMessageDialog(frame,"Zamowienie: " + id,"Szczegoly zamowienia: " + id, JOptionPane.INFORMATION_MESSAGE);
+        
+        if(DBInterface.deleteClient(id)) {
+        	JOptionPane.showMessageDialog(frame,"Klient " + id + " zostal usuniety.", "Usuniecie klienta: " + id, JOptionPane.INFORMATION_MESSAGE);
+        	updateClientsValues();
+        }
+        else {
+        	JOptionPane.showMessageDialog(frame,"Klient " + id + "nie zostal usuniety.", "Usuniecie klienta zakonczone niepowodzeniem: " + id, JOptionPane.INFORMATION_MESSAGE);
+        }
     }
     private void orderCreate() {
         CreateOrder createOrder = new CreateOrder();
-    }
-    private void orderEdit(int id) {
-        JFrame frame =new JFrame();
-        String newData = JOptionPane.showInputDialog(frame,"Podaj dane zamowienia", "Edycja zamwienie: " + id, JOptionPane.INFORMATION_MESSAGE);
     }
     private void orderPay(int id) {
         JFrame frame =new JFrame();
         String newData = JOptionPane.showInputDialog(frame,"Ile hajsu: ", "Oplacenie: " + id, JOptionPane.INFORMATION_MESSAGE);
     }
-    private void invoiceDetails(int id) {
-        JFrame frame = new JFrame();
-        JOptionPane.showMessageDialog(frame,"Faktura: " + id, "Szczegoly faktury: " + id, JOptionPane.INFORMATION_MESSAGE);
-    }
-
+    private void orderDetails(int id) {}
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -373,12 +419,6 @@ public class MainFrame implements ActionListener {
             System.out.println("createButtonProducts");
             this.productCreate();
         }
-        else if(source == detailsButtonClients) {
-            System.out.println("detailsButtonClients");
-            if (tableClients.getSelectedRow() != -1)
-                id = Integer.parseInt(tableClients.getModel().getValueAt(tableClients.getSelectedRow(), 1).toString());
-            this.clientDetails(id);
-        }
         else if(source == addButtonClients) {
             System.out.println("addButtonClients");
             this.clientAdd();
@@ -386,43 +426,45 @@ public class MainFrame implements ActionListener {
         else if(source == editButtonClients) {
             System.out.println("editButtonClients");
             if (tableClients.getSelectedRow() != -1)
-                id = Integer.parseInt(tableClients.getModel().getValueAt(tableClients.getSelectedRow(), 1).toString());
+                id = Integer.parseInt(tableClients.getModel().getValueAt(tableClients.getSelectedRow(), 0).toString());
             this.clientEdit(id);
         }
         else if(source == deleteButtonClients) {
             System.out.println("deleteButtonClients");
-            if (tableClients.getSelectedRow() != -1)
-                id = Integer.parseInt(tableClients.getModel().getValueAt(tableClients.getSelectedRow(), 1).toString());
-            this.clientDelete(id);
-        }
-        else if(source == detailsButtonOrders) {
-            System.out.println("detailsButtonOrders");
-            if (tableOrders.getSelectedRow() != -1)
-                id = Integer.parseInt(tableOrders.getModel().getValueAt(tableOrders.getSelectedRow(), 1).toString());
-            this.orderDetails(id);
+            if (tableClients.getSelectedRow() != -1) {
+                try {
+            	id = Integer.parseInt(tableClients.getModel().getValueAt(tableClients.getSelectedRow(), 0).toString());
+                this.clientDelete(id);
+                }
+                catch(Exception ex) {
+                	System.out.println("Exception at deleteButtonClients");
+                }
+            }
+                
         }
         else if(source == payButtonOrders) {
             System.out.println("payButtonOrders");
             if (tableOrders.getSelectedRow() != -1)
-                id = Integer.parseInt(tableOrders.getModel().getValueAt(tableOrders.getSelectedRow(), 1).toString());
+                id = Integer.parseInt(tableOrders.getModel().getValueAt(tableOrders.getSelectedRow(), 0).toString());
             this.orderPay(id);
-        }
-        else if(source == editButtonOrders) {
-            System.out.println("editButtonOrders");
-            if (tableOrders.getSelectedRow() != -1)
-                id = Integer.parseInt(tableOrders.getModel().getValueAt(tableOrders.getSelectedRow(), 1).toString());
-            this.orderEdit(id);
         }
         else if(source == createButtonOrders) {
             System.out.println("createButtonOrders");
             this.orderCreate();
         }
-        else if(source == detailsButtonInvoice) {
-            System.out.println("detailsButtonInvoice");
-            if (tableInvoice.getSelectedRow() != -1)
-                id = Integer.parseInt(tableInvoice.getModel().getValueAt(tableInvoice.getSelectedRow(), 1).toString());
-            this.invoiceDetails(id);
+        else if(source == detailsButtonOrders) {
+        	System.out.println("payButtonOrders");
+            if (tableOrders.getSelectedRow() != -1) {
+                try {
+	            	id = Integer.parseInt(tableOrders.getModel().getValueAt(tableOrders.getSelectedRow(), 0).toString());
+	                this.orderDetails(id);
+                }
+                catch(Exception ex) {
+                	System.out.println("Exception at detailsButtonOrders");
+                }
+            }
         }
+        refreshPanels();
     }
 
     class CreateProduct implements ActionListener  {
@@ -464,6 +506,7 @@ public class MainFrame implements ActionListener {
                 	int tax = Integer.parseInt(taxField.getText());
                 	if(DBInterface.addNewProduct(name, price, tax)) {
                 		System.out.println("Product added: " + name);
+                		refreshPanels();
                 	}
                 }catch(Exception ex) {
                 	
@@ -485,17 +528,17 @@ public class MainFrame implements ActionListener {
         JTextField clientField = new JTextField(16);
         JLabel clientLabel = new JLabel("Klient");
         String[] columnNames = {"Produkt", "cena jednostkowa", "Ilosc"};
-        Object[][] data = {{"produkt A", 12, 32},{"preda", 123, 321},{"[dasdsa", 32,1}};
-        JTable table = new JTable(data, columnNames);
+        JTable table;
 
         public CreateOrder() {
             confirm.addActionListener(this);
             cancel.addActionListener(this);
             addProduct.addActionListener(this);
             removeProduct.addActionListener(this);
-
-
-            JFrame frame = new JFrame("Stwórz produkt");
+            
+            TableModel dataModel = tableProducts.getModel();
+            table = new JTable(dataModel);
+            JFrame frame = new JFrame("Stworz produkt");
             JPanel clientPanel = new JPanel();
             clientPanel.setLayout(new FlowLayout());
             JScrollPane productsPanel = new JScrollPane(table);
@@ -528,7 +571,7 @@ public class MainFrame implements ActionListener {
                 System.out.println("cancel");
             }
             else if(source == addProduct) {
-                System.out.println("add");
+            	ProductChooser pc = new ProductChooser();
             }
             else if(source == removeProduct) {
                 String product = "";
@@ -538,6 +581,56 @@ public class MainFrame implements ActionListener {
             }
         }
     }
+    
+    class ProductChooser implements ActionListener {
+    	JButton confirm = new JButton("Dodaj");
+        JButton cancel = new JButton("Anuluj");
+        
+        JTextField quantityField = new JTextField(16);
+        JLabel quantityLabel = new JLabel("Ilosc");
+        String[] columnNames = {"Produkt", "cena jednostkowa", "Ilosc"};
+        JTable table;
+        
+        public ProductChooser() {
+        	
+        	confirm.addActionListener(this);
+        	cancel.addActionListener(this);
+        	
+        	TableModel dataModel = tableProducts.getModel();
+            table = new JTable(dataModel);
+            JFrame frame = new JFrame("Wybierz produkt");
+            JPanel quantityPanel = new JPanel();
+            quantityPanel.setLayout(new FlowLayout());
+            JScrollPane productsPanel = new JScrollPane(table);
+
+            quantityPanel.add(quantityLabel);
+            quantityPanel.add(quantityField);
+
+            quantityPanel.add(confirm);
+            quantityPanel.add(cancel);
+
+            frame.add(quantityPanel);
+            frame.add(productsPanel);
+
+            frame.setLayout(new GridLayout(1,2));
+
+            frame.setSize(500,300);
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        }
+    	
+    	@Override
+        public void actionPerformed(ActionEvent e) {
+            Object source = e.getSource();
+            if(source == confirm) {
+                System.out.println("confirm\n");
+            }
+            else if(source == cancel) {
+                System.out.println("cancel");
+            }
+        }
+    } 
 
     class CreateClient implements ActionListener  {
         JButton confirm = new JButton("Stworz");
@@ -586,7 +679,25 @@ public class MainFrame implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Object source = e.getSource();
             if(source == confirm) {
-                System.out.println("confirm\n");
+            	String name = nameField.getText();
+            	String address = addressField.getText();
+            	String nip = nipField.getText();
+            	String phone = phoneField.getText();
+            	String email = emailField.getText();
+            	
+            	if(name == null || name.compareTo("") == 0)
+            		return;
+            	if(address == null || address.compareTo("") == 0)
+            		return;
+            	if(nip == null || nip.compareTo("") == 0)
+            		return;
+            	
+            	if(DBInterface.addNewClient(name, address, nip, phone, email)) {
+            		System.out.println("Client " + name + " added.");
+            		updateClientsValues();
+            	}
+            	else
+            		System.out.println("Client " + name + " not added.");
             }
             else if(source == cancel) {
                 System.out.println("cancel");
