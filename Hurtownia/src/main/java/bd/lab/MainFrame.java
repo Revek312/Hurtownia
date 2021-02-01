@@ -461,8 +461,7 @@ public class MainFrame implements ActionListener {
         }
         else if(source == loadBackup) {
             System.out.println("load backup");
-            String backup = JOptionPane.showInputDialog(new JFrame("Backyp"), "Podaj nazwê backupu");
-            DBInterface.restoreFromBackup(backup);
+            DBInterface.restoreFromBackup();
         }
     }
     
