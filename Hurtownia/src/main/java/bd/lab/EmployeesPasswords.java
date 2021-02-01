@@ -5,13 +5,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class EmployeePassword {
+public class EmployeesPasswords {
 	@Id
 	@GeneratedValue
 	int id;
 	String pass;
 	
-	public EmployeePassword() {}
+	public EmployeesPasswords() {}
 	
 	public void setId(int id) { this.id = id; }
 	public void setPass(String pass) {this.pass = pass;}

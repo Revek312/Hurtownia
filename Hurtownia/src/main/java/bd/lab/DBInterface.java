@@ -1,11 +1,16 @@
 package bd.lab;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 
 public class DBInterface {
 	private static SessionFactory factory;
@@ -104,6 +109,43 @@ public class DBInterface {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public static boolean login(String name, String password) throws UnsupportedEncodingException, NoSuchAlgorithmException{
+		String properName = "\'" + name + "\'";
+		List<Employee> employee = ((List<Employee>) getRecordsWithConditon("Employee", "name="+properName));
+		if (employee.get(0) != null) {
+			String statement = "id=" + employee.get(0).getId();
+			List<EmployeesPasswords> employeePassword = (List<EmployeesPasswords>) getRecordsWithConditon("EmployeesPasswords", statement);
+			if (employeePassword.get(0) != null) {
+				MessageDigest digest = MessageDigest.getInstance("SHA-1");
+				digest.reset();
+				digest.update(password.getBytes("utf8"));
+				String sha1 = String.format("%040x", new BigInteger(1, digest.digest()));
+				if (employeePassword.get(0).getPass().equals(sha1)) {
+					switch (employee.get(0).getPosition()) {
+						case 1:
+							System.out.println("Logging in as employee");
+							factory = HibernateFactory.getSessionFactoryAsEmployee();
+							return true;
+						case 2:
+							System.out.println("Logging in as manager");
+							factory = HibernateFactory.getSessionFactoryAsManager();
+							return true;
+						case 3:
+							System.out.println("Logging in as CEO");
+							factory = HibernateFactory.getSessionFactoryAsRoot();
+							return true;
+						case 4:
+							System.out.println("Logging in as root");
+							factory = HibernateFactory.getSessionFactoryAsRoot();
+							return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	@SuppressWarnings("unchecked")
 	public static List<Client> getAllClients(){
 		return (List<Client>) getAllRecords("Client");
 	}
@@ -121,7 +163,6 @@ public class DBInterface {
 	}
 	@SuppressWarnings("unchecked")
 	public static List<Product> getAllProducts(){
-		System.out.println("GetAllProducts");
 		return (List<Product>)getAllRecords("Product");
 	}
 	@SuppressWarnings("unchecked")
@@ -136,8 +177,8 @@ public class DBInterface {
 		return (List<OrderLine>)getAllRecords("OrderLine");
 	}
 	
-	public static List<OrderLine> getAllOrderLinesById(int id){
-		return (List<OrderLine>)getRecordsWithConditon("OrderLine", "id="+id);
+	public static List<OrderLine> getAllOrderLinesById(int OrderId){
+		return (List<OrderLine>)getRecordsWithConditon("OrderLine", "id="+OrderId);
 	}
 	public static ProductAvailability getProductAvailabilityById(int id){
 		return ((List<ProductAvailability>)getRecordsWithConditon("ProductAvailability", "id="+id)).get(0);
@@ -148,7 +189,6 @@ public class DBInterface {
 	public static OrderPrice getOrderPriceById(int id) {
 		return ((List<OrderPrice>)getRecordsWithConditon("OrderPrice", "id="+id)).get(0);
 	}
-	
 	public static boolean addNewClient(String name, String address, String nip, String phone, String email) {
 		Client newClient = new Client();
 		newClient.setAddress(address);
